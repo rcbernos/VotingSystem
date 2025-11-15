@@ -27,6 +27,8 @@ contract Ballot {
 
     address public chairperson;
 
+    bool private _votingOpen;
+
     // This declares a state variable that
     // stores a 'Voter' struct for each possible address.
     mapping(address => Voter) public voters;
@@ -54,6 +56,8 @@ contract Ballot {
                 voteCount: 0
             }));
         }
+
+        _votingOpen = false;
     }
 
      /** 
@@ -139,6 +143,7 @@ contract Ballot {
         Voter storage sender = voters[msg.sender];
         require(sender.weight != 0, "Has no right to vote");
         require(!sender.voted, "Already voted.");
+        require(_votingOpen, "Voting is not open");
         sender.voted = true;
         sender.vote = proposal;
 
@@ -172,5 +177,16 @@ contract Ballot {
             returns (string memory winnerName_)
     {
         winnerName_ = proposals[winningProposal()].name;
+    }
+
+    function openVoting() external
+    {
+        require(msg.sender==chairperson, "Only chairperson can open voting");
+        _votingOpen = true;
+    }
+    function closeVoting() external 
+    {
+        require(msg.sender==chairperson, "Only chairperson can close voting");
+        _votingOpen = false;
     }
 }
