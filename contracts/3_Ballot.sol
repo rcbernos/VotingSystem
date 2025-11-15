@@ -21,7 +21,7 @@ contract Ballot {
     struct Proposal {
         // If you can limit the length to a certain number of bytes, 
         // always use one of bytes1 to bytes32 because they are much cheaper
-        bytes32 name;   // short name (up to 32 bytes)
+        string name;   // short name (up to 32 bytes)
         uint voteCount; // number of accumulated votes
     }
 
@@ -38,7 +38,7 @@ contract Ballot {
      * @dev Create a new ballot to choose one of 'proposalNames'.
      * @param proposalNames names of proposals
      */
-    constructor(bytes32[] memory proposalNames) {
+    constructor(string[] memory proposalNames) {
         chairperson = msg.sender;
         voters[chairperson].weight = 1;
 
@@ -169,7 +169,7 @@ contract Ballot {
      * @return winnerName_ the name of the winner
      */
     function winnerName() external view
-            returns (bytes32 winnerName_)
+            returns (string memory winnerName_)
     {
         winnerName_ = proposals[winningProposal()].name;
     }
