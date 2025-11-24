@@ -60,6 +60,17 @@ contract Ballot {
         _votingOpen = false;
     }
 
+    /**
+    * @dev Transfer chairperson/admin role to a new address
+    * @param newChair address of the new chairperson 
+    */
+    function reassignChairperson(address newChair) external {
+
+	require(msg.sender == chairperson, "Only the chairperson can transfer his/her role.");
+	require(newChair != address(0), "Cannot transfer to zero address.");
+	chairperson = newChair;
+    }
+
      /** 
      * @dev Give 'voter' the right to vote on this ballot. May only be called by 'chairperson'.
      * @param voter address of voter
