@@ -200,4 +200,11 @@ contract Ballot {
         require(msg.sender==chairperson, "Only chairperson can close voting");
         _votingOpen = false;
     }
+
+    function resultsSummary() public view returns (Proposal[] memory)
+    {
+        require(_votingOpen == false, "Voting has to be closed first to tally result");
+        
+        return proposals;
+    }
 }
