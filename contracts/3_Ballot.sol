@@ -166,29 +166,45 @@ contract Ballot {
 
     /** 
      * @dev Computes the winning proposal taking all previous votes into account.
-     * @return winningProposal_ index of winning proposal in the proposals array
+     * @return winners winning proposals (ties included)
      */
-    function winningProposal() public view
-            returns (uint winningProposal_)
+    function winningProposal() public view returns (Proposal[] memory)
     {
+        require(_votingOpen == false, "voting has to be closed to see the winning proposal");
         uint winningVoteCount = 0;
+        uint count = 0;
+
         for (uint p = 0; p < proposals.length; p++) {
             if (proposals[p].voteCount > winningVoteCount) {
                 winningVoteCount = proposals[p].voteCount;
-                winningProposal_ = p;
+                count = 1;
+            }
+            else if (proposals[p].voteCount == winningVoteCount) {
+                count++;
             }
         }
+
+        Proposal[] memory winners = new Proposal[](count);
+        uint i = 0;
+        for (uint256 p = 0; p < proposals.length; p++) {
+            if (proposals[p].voteCount == winningVoteCount) {
+                winners[i] = proposals[p];
+                i++;
+            }
+        }
+        return winners;
     }
 
-    /** 
-     * @dev Calls winningProposal() function to get the index of the winner contained in the proposals array and then
-     * @return winnerName_ the name of the winner
-     */
-    function winnerName() external view
-            returns (string memory winnerName_)
-    {
-        winnerName_ = proposals[winningProposal()].name;
-    }
+    // /** 
+    //  DEPRACATED
+    //  * @dev Calls winningProposal() function to get the index of the winner contained in the proposals array and then
+    //  * @return winnerName_ the name of the winner
+    //  */
+    // function winnerName() external view
+    //         returns (string memory winnerName_)
+    // {
+    //     winnerName_ = proposals[winningProposal()].name;
+    // }
 
     function openVoting() external
     {
