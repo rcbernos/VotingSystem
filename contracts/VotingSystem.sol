@@ -45,6 +45,7 @@ contract electoralAdmin{
 
         voterContract.setCandidate(address(candidateContract));
         voterContract.openVoting();
+        voterContract.setVotes(1);
         votingIsOpen = true;
     }
 
@@ -66,11 +67,11 @@ contract electoralAdmin{
 
     function countVotes() private  {
         require(address(candidateContract) != address(0), "Candidate Contract not set");
-        // counts the votes for each candidate
-        // in this case, its already counted 
-        // TODO: remove later?
-        // TODO: I essentiallyd did another iteration that just converts the resutls into a single type, kinda redundant
-        // but i don't see much use for this function anyways, since candidate keeps track of the votes.
+        for (uint i = 0; i < candidate_list.length; i++) {
+            delete results[candidate_list[i]];
+        }
+        delete candidate_list;
+        
         (string[] memory candidates, uint[] memory vote_counts) = candidateContract.getResults();
 
         for (uint256 i = 0; i < candidates.length; i++) {
