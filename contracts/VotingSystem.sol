@@ -107,14 +107,15 @@ contract Candidate {
 
     mapping(string => Vote[]) private votes;
 
-    address private adminContract;
+    electoralAdmin private adminContract;
 
     constructor(address _adminContract) {
-        adminContract = _adminContract;
+        adminContract = electoralAdmin(_adminContract);
+        adminContract.setCandidate(address(this));
     }
 
     modifier onlyAdmin() {
-        require(msg.sender == adminContract, "Only Electoral Admin can make changes!");
+        require(msg.sender == address(adminContract), "Only Electoral Admin can make changes!");
         _;
     }
 
