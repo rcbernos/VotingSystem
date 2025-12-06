@@ -147,6 +147,7 @@ contract Candidate {
     }
 
     function receiveVote(string memory _candidate, address _voter, uint _weight) public {
+        require(msg.sender == address(adminContract.voterContract()), "Only the Voter contract can access this");
         Vote memory new_vote = Vote({
             voter: _voter,
             weight: _weight
