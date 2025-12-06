@@ -120,7 +120,6 @@ contract Candidate {
 
     constructor(address _adminContract) {
         adminContract = electoralAdmin(_adminContract);
-        adminContract.setCandidate(address(this));
     }
 
     modifier onlyAdmin() {
