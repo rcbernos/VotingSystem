@@ -7,11 +7,11 @@ contract electoralAdmin{
     Candidate public candidateContract;
     VoterID public voterContract;
 
-    constructor() {
+    constructor(address candidate_address, address voter_address) {
         owner = msg.sender;
         votingIsOpen = false;
-        candidateContract = new Candidate(address(this));
-        // VoterID = new VoterID(address(this));
+        candidateContract = Candidate(candidate_address);
+        voterContract = VoterID(voter_address);
     }
 
     function addCandidate(string memory newCandidate) private {
