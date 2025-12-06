@@ -157,18 +157,58 @@ contract Candidate {
         return (candidateList, results);
     }
 }
-contract VoterID {
+contract Voter {
+    bool votingIsOpen;
+    address private adminAddress;
+    Candidate public candidateContract;
+    electoralAdmin public adminContract;
+
+    constructor(address _adminContract) {
+        adminContract = electoralAdmin(_adminContract);
+        adminAddress = _adminContract;
+    }
+
+    mapping(address => uint) private voteWeight;
+
+    function registerVoter(address _voter, uint _weight) public {
+        // set the voting weight for this voter
+        voteWeight[_voter] = _weight;   
+    }
+
+    function setCandidate(address _candidateContract) public {
+        require(msg.sender==adminAddress, "Only the Electoral Admin can set the candidate contract");
+        candidateContract = Candidate(_candidateContract);
+    }
+
     //add way to store addresses in a VoterID subcontract or mapping
-    function sendVote () public {
-        // decrease 1 vote to the voter
+    function sendVote (string memory _candidate) public {
+        require(votingIsOpen, "Voting is closed");
+        require(voteWeight[msg.sender] > 0, "No votes left");
         // calls receiveVote() in candidate
+        candidateContract.receiveVote(_candidate, msg.sender, voteWeight[msg.sender]);
+        // sets voteweight to 0
+        voteWeight[msg.sender] = 0;
     }
 
     function resetVotes () public {
         //reset Votes in all addresses in VoterID
+        // mapping(address => uint) private voteWeight;
     }
 
-    function delegateVote () public {
+    function delegateVote (address _delegater, address _delegatee) public {
         // passing of voting rights
+        require(msg.sender == _delegater, "Only the delegater can delegate their vote");
+        require(voteWeight[_delegater] > 0, "Delegater has no votes");
+        voteWeight[_delegatee] += voteWeight[_delegater];
+        voteWeight[_delegater] = 0;
+    }
+    function openVoting() public {
+        require(msg.sender == adminAddress, "Only admin can open voting");
+        votingIsOpen = true;
+    }
+
+    function closeVoting() public {
+        require(msg.sender == adminAddress, "Only admin can close voting");
+        votingIsOpen = false;
     }
 }
