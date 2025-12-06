@@ -56,39 +56,51 @@ contract electoralAdmin{
         votingIsOpen = false;
     }
 
-    struct Results {
-        string candidate;
-        uint vote_count;
-    }
+    // struct Results {
+    //     string candidate;
+    //     uint vote_count;
+    // }
 
-    function countVotes() private view returns (Results[] memory results){
+    string[] candidate_list;
+    mapping(string => uint) results;
+
+    function countVotes() private  {
+        require(address(candidateContract) != address(0), "Candidate Contract not set");
         // counts the votes for each candidate
         // in this case, its already counted 
         // TODO: remove later?
         // TODO: I essentiallyd did another iteration that just converts the resutls into a single type, kinda redundant
         // but i don't see much use for this function anyways, since candidate keeps track of the votes.
         (string[] memory candidates, uint[] memory vote_counts) = candidateContract.getResults();
-        results = new Results[](candidates.length);
 
         for (uint256 i = 0; i < candidates.length; i++) {
-            results[i] = Results({
-                candidate: candidates[i],
-                vote_count: vote_counts[i]
-            });
+            // results[i] = Results({
+            //     candidate: candidates[i],
+            //     vote_count: vote_counts[i]
+            // });
+            results[candidates[i]] = vote_counts[i];
+            candidate_list.push(candidates[i]);
         }
 
     }
 
     function winnerList () public onlyOwner() view returns (string[] memory winning_candidates, uint winning_count){
-        Results[] memory results = countVotes();
+
         winning_count = 0;
         uint winner_count = 0;
-        for (uint256 i = 0; i < results.length; i++) {
-            if (results[i].vote_count > winning_count) {
-                winning_count = results[i].vote_count;
+        for (uint256 i = 0; i < candidate_list.length; i++) {
+            // if (results[i].vote_count > winning_count) {
+            //     winning_count = results[i].vote_count;
+            //     winner_count = 1;
+            // }
+            // else if (results[i].vote_count == winning_count) {
+            //     winner_count += 1;
+            // }
+            if (results[candidate_list[i]] > winning_count) {
+                winning_count = results[candidate_list[i]];
                 winner_count = 1;
             }
-            else if (results[i].vote_count == winning_count) {
+            else if (results[candidate_list[i]] == winning_count) {
                 winner_count += 1;
             }
         }
@@ -96,13 +108,17 @@ contract electoralAdmin{
         // small optimization instead of creating a new dynamic array every iteration.
         winning_candidates = new string[](winner_count);
         uint j = 0;
-        for (uint256 i = 0; i < results.length; i++) {
-            if (results[i].vote_count == winning_count) {
-                winning_candidates[j] = results[i].candidate;
+        for (uint256 i = 0; i < candidate_list.length; i++) {
+            if (results[candidate_list[i]] == winning_count) {
+                winning_candidates[j] = candidate_list[i];
                 j += 1;
             }
         }
 
+    }
+
+    function getVoteCount(string memory candidate) public view onlyOwner() returns (uint){
+        return results[candidate];
     }
     
 }
