@@ -7,6 +7,7 @@ contract ElectoralAdmin{
     address electoralAdmin = msg.sender;
     address candidateContract;
     address voterIDContract;
+    bool votingIsOpen;
 
     function setCandidateContract(address cc) public {
         require(msg.sender == electoralAdmin, "Must be contract owner to set");
@@ -26,4 +27,14 @@ contract ElectoralAdmin{
         //reset VoteCount in Candidate
     }
 
+    function openVoting() public {
+        //allows users to vote through VoterID contract
+    }
+
+    function closeVoting() public {
+        // prevents any additional changes to votes and VoteCount
+    }
+    function countVotes() public {
+        // counts the votes for each candidate
+    }
 }
