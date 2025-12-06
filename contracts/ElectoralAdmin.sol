@@ -7,12 +7,14 @@ contract ElectoralAdmin{
     address candidateContract;
     address voterIDContract;
 
-    function setCandidateContract() public {
-
+    function setCandidateContract(address cc) public {
+        require(msg.sender == electoralAdmin, "Must be contract owner to set");
+        candidateContract = cc;
     }
 
-    function setVoterIDContract() public {
-
+    function setVoterIDContract(address vid) public {
+        require(msg.sender == electoralAdmin, "Must be contract owner to set");
+        voterIDContract = vid;
     }
 
     function instantiateVoterID()public{
