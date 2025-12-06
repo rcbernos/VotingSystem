@@ -45,5 +45,9 @@ contract VotingSystem{
         // also has at least one vote
         // also decrease votes in VoterID for the respective address
     }
+
+    function winnerList () public {
+        // show list of winners
+    }
     
 }
