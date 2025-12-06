@@ -45,6 +45,7 @@ contract electoralAdmin{
 
         voterContract.setCandidate(address(candidateContract));
         voterContract.openVoting();
+        voterContract.setVotes(1);
         votingIsOpen = true;
     }
 
