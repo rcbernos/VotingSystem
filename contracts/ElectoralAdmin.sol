@@ -3,6 +3,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 contract ElectoralAdmin{
+    // intended features is to set votes and voteCount
     address electoralAdmin = msg.sender;
     address candidateContract;
     address voterIDContract;
