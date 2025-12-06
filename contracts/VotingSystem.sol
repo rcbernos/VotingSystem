@@ -34,11 +34,20 @@ contract electoralAdmin{
     }
 
     function openVoting() public onlyOwner() {
+        require(address(candidateContract) != address(0), "Candidate Contract not set");
+        require(address(voterContract) != address(0), "Voter Contract not set");
+        require(votingIsOpen == false, "Voting already open");
+
+        voterContract.setCandidate(address(candidateContract));
+        voterContract.openVoting();
         votingIsOpen = true;
     }
 
     function closeVoting() public onlyOwner() {
         // prevents any additional changes to votes and VoteCount
+        require(votingIsOpen == true, "Voting already closed");
+
+        voterContract.closeVoting();
         votingIsOpen = false;
     }
 
