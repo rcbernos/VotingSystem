@@ -5,7 +5,7 @@ contract electoralAdmin{
     bool votingIsOpen;
     address public owner;
     Candidate public candidateContract;
-    VoterID public voterContract;
+    Voter public voterContract;
 
     constructor() {
         owner = msg.sender;
@@ -13,7 +13,7 @@ contract electoralAdmin{
     }
 
     function setVoter(address voterAddress) public onlyOwner(){
-        voterContract = VoterID(voterAddress);
+        voterContract = Voter(voterAddress);
     }
 
     function setCandidate(address candidateAddress) public onlyOwner(){
