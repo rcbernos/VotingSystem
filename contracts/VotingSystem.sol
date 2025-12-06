@@ -28,16 +28,56 @@ contract electoralAdmin{
 
 contract Candidate {
     //add an object to store candidates
-    function addCandidate () public {
-        // adds a candidate in the Candidate object and sets voteCount to 0
+
+    // used mapping to do O(1) checks for candidates instead of iterating through the list
+    mapping(string => bool) private candidates;
+    string[] private candidateList;
+
+    struct Vote {
+        address voter;
+        uint weight;
+    }
+
+    mapping(string => Vote[]) private votes;
+
+    address private adminContract;
+
+    constructor(address _adminContract) {
+        adminContract = _adminContract;
+    }
+
+    modifier onlyAdmin() {
+        require(msg.sender == adminContract, "Only Electoral Admin can make changes!");
+        _;
+    }
+
+    function addCandidate (string memory newCandidate) public onlyAdmin() {
+        require(candidates[newCandidate] == false, "Candidate already exists!");
+        candidates[newCandidate] = true;
+        candidateList.push(newCandidate);
     }
 
     function resetVoteCount() public {
-        //reset VoteCount in all Candidate entities/structs
+        // TODO:
     }
-    
-    function receiveVote() public {
-        // add 1 voteCount to the candidate
+
+    function receiveVote(string memory _candidate, address _voter, uint _weight) public {
+        Vote memory new_vote = Vote({
+            voter: _voter,
+            weight: _weight
+        });
+
+        require(candidates[_candidate] == true, "Candidate does not exist!");
+
+        votes[_candidate].push(new_vote);
+    }
+
+
+    function getResults() public view onlyAdmin() returns (string[] memory, uint[] memory results) {
+        for (uint256 i = 0; i < candidateList.length; i++) {
+            results[i] = votes[candidateList[i]].length;
+        }
+        return (candidateList, results);
     }
 }
 contract VoterID {
