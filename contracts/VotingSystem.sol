@@ -148,13 +148,13 @@ contract Candidate {
         _;
     }
 
-    function addCandidate (string memory newCandidate) public onlyAdmin() {
+    function addCandidate (string memory newCandidate) external onlyAdmin() {
         require(candidates[newCandidate] == false, "Candidate already exists!");
         candidates[newCandidate] = true;
         candidateList.push(newCandidate);
     }
 
-    function resetVoteCount() public onlyAdmin() {
+    function resetVoteCount() external onlyAdmin() {
         // UNTESTED CODE
         // Unsure how delete interacts with mappings.
         for (uint256 i = 0; i < candidateList.length; i++) {
@@ -162,7 +162,7 @@ contract Candidate {
         }
     }
 
-    function receiveVote(string memory _candidate, address _voter, uint _weight) public {
+    function receiveVote(string memory _candidate, address _voter, uint _weight) external {
         require(msg.sender == address(adminContract.voterContract()), "Only the Voter contract can access this");
         Vote memory new_vote = Vote({
             voter: _voter,
@@ -175,7 +175,7 @@ contract Candidate {
     }
 
 
-    function getResults() public view onlyAdmin() returns (string[] memory, uint[] memory results) {
+    function getResults() external view onlyAdmin() returns (string[] memory, uint[] memory results) {
         results = new uint[](candidateList.length);
         for (uint256 i = 0; i < candidateList.length; i++) {
             uint total_count = 0;
@@ -210,7 +210,7 @@ contract Voter {
         return false;
     }
 
-    function registerVoter(address _voter, uint _weight) public {
+    function registerVoter(address _voter, uint _weight) external {
         // set the voting weight for this voter
         require(!isRegistered(_voter), "Voter is already registered!");
         require(msg.sender==adminAddress, "Only Electoral Admin can register voters");
@@ -219,13 +219,13 @@ contract Voter {
         voters.push(_voter);
     }
 
-    function setCandidate(address _candidateContract) public {
+    function setCandidate(address _candidateContract) external {
         require(msg.sender==adminAddress, "Only the Electoral Admin can set the candidate contract");
         candidateContract = Candidate(_candidateContract);
     }
 
     //add way to store addresses in a VoterID subcontract or mapping
-    function sendVote (string memory _candidate) public {
+    function sendVote (string memory _candidate) external {
         require(votingIsOpen, "Voting is closed");
         require(voteWeight[msg.sender] > 0, "No votes left");
         // calls receiveVote() in candidate
@@ -234,14 +234,14 @@ contract Voter {
         voteWeight[msg.sender] = 0;
     }
 
-    function setVotes (uint _newVoteWeight) public {
+    function setVotes (uint _newVoteWeight) external {
         require(msg.sender==adminAddress, "Only the Electoral Admin can set the vote weights");
         for (uint i = 0; i < voters.length; i++) {
             voteWeight[voters[i]] = _newVoteWeight;
         }
     }
 
-    function delegateVote (address _delegater, address _delegatee) public {
+    function delegateVote (address _delegater, address _delegatee) external {
         // passing of voting rights
         require(msg.sender == _delegater, "Only the delegater can delegate their vote");
         require(voteWeight[_delegater] > 0, "Delegater has no votes");
@@ -249,12 +249,12 @@ contract Voter {
         voteWeight[_delegatee] += voteWeight[_delegater];
         voteWeight[_delegater] = 0;
     }
-    function openVoting() public {
+    function openVoting() external {
         require(msg.sender == adminAddress, "Only admin can open voting");
         votingIsOpen = true;
     }
 
-    function closeVoting() public {
+    function closeVoting() external {
         require(msg.sender == adminAddress, "Only admin can close voting");
         votingIsOpen = false;
     }
