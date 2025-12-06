@@ -229,6 +229,7 @@ contract Voter {
         // passing of voting rights
         require(msg.sender == _delegater, "Only the delegater can delegate their vote");
         require(voteWeight[_delegater] > 0, "Delegater has no votes");
+        require(voteWeight[_delegatee] > 0, "Delegatee must be registered and still capable of voting");
         voteWeight[_delegatee] += voteWeight[_delegater];
         voteWeight[_delegater] = 0;
     }
