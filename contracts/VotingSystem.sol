@@ -3,25 +3,81 @@
 pragma solidity >=0.7.0 <0.9.0;
 contract electoralAdmin{
     bool votingIsOpen;
+    address public owner;
+    Candidate public candidateContract;
+    VoterID public voterContract;
+
+    constructor() {
+        owner = msg.sender;
+        votingIsOpen = false;
+        candidateContract = new Candidate(address(this));
+        // VoterID = new VoterID(address(this));
+    }
+
+    function addCandidate(string memory newCandidate) private {
+        candidateContract.addCandidate(newCandidate);
+    }
 
     function assignElectoralAdmin () public {
         // reassigns the Electoral Admin
     }
 
     function openVoting() public {
-        //allows voters to vote 
+        votingIsOpen = true;
     }
 
     function closeVoting() public {
         // prevents any additional changes to votes and VoteCount
+        votingIsOpen = false;
     }
 
-    function countVotes() public {
+    struct Results {
+        string candidate;
+        uint vote_count;
+    }
+
+    function countVotes() private view returns (Results[] memory results){
         // counts the votes for each candidate
+        // in this case, its already counted 
+        // TODO: remove later?
+        // TODO: I essentiallyd did another iteration that just converts the resutls into a single type, kinda redundant
+        // but i don't see much use for this function anyways, since candidate keeps track of the votes.
+        (string[] memory candidates, uint[] memory vote_counts) = candidateContract.getResults();
+        results = new Results[](candidates.length);
+
+        for (uint256 i = 0; i < candidates.length; i++) {
+            results[i] = Results({
+                candidate: candidates[i],
+                vote_count: vote_counts[i]
+            });
+        }
+
     }
 
-    function winnerList () public {
-        // show list of winners
+    function winnerList () public view returns (string[] memory winning_candidates, uint winning_count){
+        Results[] memory results = countVotes();
+        winning_count = 0;
+        uint winner_count = 0;
+        for (uint256 i = 0; i < results.length; i++) {
+            if (results[i].vote_count > winning_count) {
+                winning_count = results[i].vote_count;
+                winner_count = 1;
+            }
+            else if (results[i].vote_count == winning_count) {
+                winner_count += 1;
+            }
+        }
+
+        // small optimization instead of creating a new dynamic array every iteration.
+        winning_candidates = new string[](winner_count);
+        uint j = 0;
+        for (uint256 i = 0; i < results.length; i++) {
+            if (results[i].vote_count == winning_count) {
+                winning_candidates[j] = results[i].candidate;
+                j += 1;
+            }
+        }
+
     }
     
 }
