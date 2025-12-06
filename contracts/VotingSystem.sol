@@ -183,7 +183,7 @@ contract Voter {
         // set the voting weight for this voter
         require(!isRegistered(_voter), "Voter is already registered!");
         voteWeight[_voter] = _weight;   
-
+        voters.push(_voter);
     }
 
     function setCandidate(address _candidateContract) public {
@@ -201,9 +201,11 @@ contract Voter {
         voteWeight[msg.sender] = 0;
     }
 
-    function resetVotes () public {
-        //reset Votes in all addresses in VoterID
-
+    function setVotes (uint _newVoteWeight) public {
+        require(msg.sender==adminAddress, "Only the Electoral Admin can set the vote weights");
+        for (uint i = 0; i < voters.length; i++) {
+            voteWeight[voters[i]] = _newVoteWeight;
+        }
     }
 
     function delegateVote (address _delegater, address _delegatee) public {
