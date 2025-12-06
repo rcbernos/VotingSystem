@@ -132,7 +132,11 @@ contract Candidate {
     function getResults() public view onlyAdmin() returns (string[] memory, uint[] memory results) {
         results = new uint[](candidateList.length);
         for (uint256 i = 0; i < candidateList.length; i++) {
-            results[i] = votes[candidateList[i]].length;
+            uint total_count = 0;
+            for (uint256 j = 0; j < votes[candidateList[i]].length; j++) {
+                total_count += votes[candidateList[i]][j].weight;
+            }
+            results[i] = total_count;
         }
         return (candidateList, results);
     }
