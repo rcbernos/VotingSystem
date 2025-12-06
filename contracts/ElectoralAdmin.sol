@@ -18,12 +18,6 @@ contract ElectoralAdmin{
         voterIDContract = vid;
     }
 
-    function instantiateVoterID()public{
-
-    }
-    function instantiateCandidate()public{
-
-    }
     function setVotes () public {
 
     }
