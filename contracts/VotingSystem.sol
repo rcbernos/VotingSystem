@@ -169,6 +169,7 @@ contract Candidate {
 contract Voter {
     bool votingIsOpen;
     address private adminAddress;
+    address[] private voters;
     Candidate public candidateContract;
     electoralAdmin public adminContract;
 
@@ -179,9 +180,20 @@ contract Voter {
 
     mapping(address => uint) private voteWeight;
 
+    function isRegistered(address _voter) public view returns (bool) {
+        for (uint i = 0; i < voters.length; i++) {
+            if (voters[i] == _voter) {
+                return true; // match found
+            }
+        }
+        return false;
+    }
+
     function registerVoter(address _voter, uint _weight) public {
         // set the voting weight for this voter
+        require(!isRegistered(_voter), "Voter is already registered!");
         voteWeight[_voter] = _weight;   
+
     }
 
     function setCandidate(address _candidateContract) public {
@@ -201,7 +213,7 @@ contract Voter {
 
     function resetVotes () public {
         //reset Votes in all addresses in VoterID
-        // mapping(address => uint) private voteWeight;
+
     }
 
     function delegateVote (address _delegater, address _delegatee) public {
