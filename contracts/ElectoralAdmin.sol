@@ -18,7 +18,12 @@ contract ElectoralAdmin{
         voterIDContract = vid;
     }
 
-    function setVotes () public {
-
+    function resetVotes () public {
+        //reset Votes in VoterID
     }
+
+    function resetVoteCount() public {
+        //reset VoteCount in Candidate
+    }
+
 }
