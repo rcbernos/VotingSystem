@@ -113,8 +113,12 @@ contract Candidate {
         candidateList.push(newCandidate);
     }
 
-    function resetVoteCount() public {
-        // TODO:
+    function resetVoteCount() public onlyAdmin() {
+        // UNTESTED CODE
+        // Unsure how delete interacts with mappings.
+        for (uint256 i = 0; i < candidateList.length; i++) {
+            delete votes[candidateList[i]];
+        }
     }
 
     function receiveVote(string memory _candidate, address _voter, uint _weight) public {
