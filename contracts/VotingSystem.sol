@@ -74,6 +74,7 @@ contract Candidate {
 
 
     function getResults() public view onlyAdmin() returns (string[] memory, uint[] memory results) {
+        results = new uint[](candidateList.length);
         for (uint256 i = 0; i < candidateList.length; i++) {
             results[i] = votes[candidateList[i]].length;
         }
