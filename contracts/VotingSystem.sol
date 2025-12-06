@@ -84,8 +84,8 @@ contract electoralAdmin{
 
     }
 
-    function winnerList () public onlyOwner() view returns (string[] memory winning_candidates, uint winning_count){
-
+    function winnerList () public onlyOwner() returns (string[] memory winning_candidates, uint winning_count){
+        countVotes();
         winning_count = 0;
         uint winner_count = 0;
         for (uint256 i = 0; i < candidate_list.length; i++) {
@@ -117,7 +117,8 @@ contract electoralAdmin{
 
     }
 
-    function getVoteCount(string memory candidate) public view onlyOwner() returns (uint){
+    function getVoteCount(string memory candidate) public onlyOwner() returns (uint){
+        countVotes();
         return results[candidate];
     }
     
