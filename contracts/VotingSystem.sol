@@ -12,11 +12,11 @@ contract electoralAdmin{
         votingIsOpen = false;
     }
 
-    function setVoter(address voterAddress) public onlyOwner(){
+    function setVoterContract(address voterAddress) public onlyOwner(){
         voterContract = Voter(voterAddress);
     }
 
-    function setCandidate(address candidateAddress) public onlyOwner(){
+    function setCandidateContract(address candidateAddress) public onlyOwner(){
         candidateContract = Candidate(candidateAddress);
     }
 
@@ -25,8 +25,13 @@ contract electoralAdmin{
         _;
     }
 
-    function addCandidate(string memory newCandidate) private onlyOwner() {
+    function addCandidate(string memory newCandidate) public onlyOwner() {
         candidateContract.addCandidate(newCandidate);
+    }
+
+    function registerVoter(address voter_address, uint weight) public onlyOwner() {
+        require(address(voterContract) != address(0), "Voter Contract not set");
+        voterContract.registerVoter(voter_address, weight);
     }
 
     function assignElectoralAdmin (address new_admin) public onlyOwner() {
@@ -74,7 +79,7 @@ contract electoralAdmin{
 
     }
 
-    function winnerList () public view returns (string[] memory winning_candidates, uint winning_count){
+    function winnerList () public onlyOwner() view returns (string[] memory winning_candidates, uint winning_count){
         Results[] memory results = countVotes();
         winning_count = 0;
         uint winner_count = 0;
@@ -120,7 +125,6 @@ contract Candidate {
 
     constructor(address _adminContract) {
         adminContract = electoralAdmin(_adminContract);
-        adminContract.setCandidate(address(this));
     }
 
     modifier onlyAdmin() {
@@ -192,6 +196,8 @@ contract Voter {
     function registerVoter(address _voter, uint _weight) public {
         // set the voting weight for this voter
         require(!isRegistered(_voter), "Voter is already registered!");
+        require(msg.sender==adminAddress, "Only Electoral Admin can register voters");
+        
         voteWeight[_voter] = _weight;   
         voters.push(_voter);
     }
@@ -234,4 +240,5 @@ contract Voter {
         require(msg.sender == adminAddress, "Only admin can close voting");
         votingIsOpen = false;
     }
+
 }
