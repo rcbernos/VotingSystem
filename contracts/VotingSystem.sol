@@ -7,26 +7,30 @@ contract electoralAdmin{
     Candidate public candidateContract;
     VoterID public voterContract;
 
-    constructor() {
+    constructor(address candidate_address, address voter_address) {
         owner = msg.sender;
         votingIsOpen = false;
-        candidateContract = new Candidate(address(this));
-        // VoterID = new VoterID(address(this));
+        candidateContract = Candidate(candidate_address);
+        voterContract = VoterID(voter_address);
+    }
+    modifier onlyOwner() {
+        require(owner==msg.sender, "Only Admin can make changes!");
+        _;
     }
 
-    function addCandidate(string memory newCandidate) private {
+    function addCandidate(string memory newCandidate) private onlyOwner() {
         candidateContract.addCandidate(newCandidate);
     }
 
-    function assignElectoralAdmin () public {
-        // reassigns the Electoral Admin
+    function assignElectoralAdmin (address new_admin) public onlyOwner() {
+        owner = new_admin;
     }
 
-    function openVoting() public {
+    function openVoting() public onlyOwner() {
         votingIsOpen = true;
     }
 
-    function closeVoting() public {
+    function closeVoting() public onlyOwner() {
         // prevents any additional changes to votes and VoteCount
         votingIsOpen = false;
     }
